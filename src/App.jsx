@@ -19,10 +19,12 @@ export default function App() {
   //編集して新しく保存するtodoのtext
   const [currentTodo, setCurrentTodo] = useState({});
 
-  //ドロップダウンリストでtodoのステータスを変更するためのステート
+  //ドロップダウンリストでtodoのステータスを変更するためのステート？
   const [selectedStatus, setSelectedStatus] = useState(todo.status);
-  //リストで表示させたいもののフィルターの値　初期値すべて
+  //リストで表示させたいもののフィルターの値　初期値すべて〇
   const [selectedFilter, setSelectedFilter] = useState("all");
+  //フィルターされたtodoリストを保持〇
+  const [filteredTodos, setFilteredTodos] = useState([])
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
@@ -78,13 +80,25 @@ export default function App() {
     handleUpdateTodo(currentTodo.id, currentTodo);
   }
 
-  //選択されたステータスに更新
+  //選択されたステータスに更新？？
   function handleStatusChange(e) {
     setSelectedStatus(e.target.value);
   }
-  //選択されたステータスにフィルターを更新
+  //選択されたステータスにフィルターを更新？？
   function handleFilterChange(e) {
     setSelectedFilter(e.target.value);
+    const newtodos =(todos).filter((todo) => {
+      if(selectedFilter === "all") {
+        return todos;
+      } else if(selectedFilter === "notStarted") {
+        return todo.status === "notStarted"
+      } else if(selectedFilter === "inProgress") {
+        return todo.status === "inProgress"
+      } else if(selectedFilter === "done") {
+        return todo.status === "done"
+      }
+    })
+    setFilteredTodos(newtodos)
   }
 
   return (
@@ -112,7 +126,7 @@ export default function App() {
             handleInputChange={handleInputChange}
             handleFormSubmit={handleFormSubmit}
           />
-          <select name="進行度" size="1" onChange={handleFilterChange}>
+          <select name="進行度" size="1" onChange={handleFilterChange} value={selectedFilter}>
             <option value="all">すべて</option>
             <option value="notStarted">未着手</option>
             <option value="inProgress">着手</option>
@@ -122,10 +136,10 @@ export default function App() {
       )}
 
       <ul className="todo-list">
-        {todos.map((todo) => (
+        {filteredTodos.map((todo) => (
           <li key={todo.id}>
             {todo.text}
-            <select name="進行度" size="1" onChange={handleStatusChange}>
+            <select name="進行度" size="1" onChange={handleStatusChange} >
               <option value="notStarted">未着手</option>
               <option value="inProgress">着手</option>
               <option value="done">完了</option>
